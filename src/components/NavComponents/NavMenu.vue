@@ -1,31 +1,175 @@
 <script setup lang="ts">
-defineProps<{
+import gsap from 'gsap';
+import { ref, watch } from 'vue';
+
+const props = defineProps<{
 	isOpen: boolean;
 }>()
+
+const menuNumberRefs = ref<HTMLSpanElement[]>([]);
+const menuTitleRefs = ref<HTMLSpanElement[]>([]);
+const menuFooterRefs = ref<HTMLButtonElement[]>([]);
+const menuContainerRef = ref<HTMLDivElement | null>(null);
+
+// Function to set refs for arrays
+const setMenuNumberRef = (el: any) => {
+    if (el && el instanceof HTMLSpanElement && !menuNumberRefs.value.includes(el)) {
+        menuNumberRefs.value.push(el);
+    }
+};
+
+const setMenuTitleRef = (el: any) => {
+    if (el && el instanceof HTMLSpanElement && !menuTitleRefs.value.includes(el)) {
+        menuTitleRefs.value.push(el);
+    }
+};
+
+const setMenuFooterRef = (el: any) => {
+    if (el && el instanceof HTMLButtonElement && !menuFooterRefs.value.includes(el)) {
+        menuFooterRefs.value.push(el);
+    }
+};
+
+watch(() => props.isOpen, (newValue) => {
+    // Kill any running animations first
+    gsap.killTweensOf(menuContainerRef.value);
+    gsap.killTweensOf(menuNumberRefs.value);
+    gsap.killTweensOf(menuTitleRefs.value);
+    gsap.killTweensOf(menuFooterRefs.value);
+    
+    if (newValue && menuContainerRef.value && menuNumberRefs.value && menuTitleRefs.value && menuFooterRefs.value) {
+        // Container animation - match NavFilmList timing
+        gsap.to(menuContainerRef.value, {
+            maxHeight: '500px',
+            duration: 0.8,
+            ease: 'power2.out',
+        });
+        
+        // Menu numbers reveal animation
+        gsap.fromTo(menuNumberRefs.value, 
+            {
+                clipPath: 'inset(0 0 200% 0)',
+                yPercent: 100,
+            },
+            {
+                clipPath: 'inset(0 0 0% 0)',
+                yPercent: 0,
+                duration: 0.8,
+                ease: 'power2.out',
+                stagger: 0.05,
+            }
+        );
+    
+        // Menu titles reveal animation
+        gsap.fromTo(menuTitleRefs.value, 
+            {
+                clipPath: 'inset(0 0 200% 0)',
+                yPercent: 100,
+            },
+            {
+                clipPath: 'inset(0 0 0% 0)',
+                yPercent: 0,
+                duration: 0.8,
+                ease: 'power2.out',
+                stagger: 0.05,
+            }
+        );
+        
+        // Footer buttons reveal animation
+        gsap.fromTo(menuFooterRefs.value, 
+            {
+                clipPath: 'inset(0 0 200% 0)',
+                yPercent: 100,
+            },
+            {
+                clipPath: 'inset(0 0 0% 0)',
+                yPercent: 0,
+                duration: 0.8,
+                ease: 'power2.out',
+                stagger: 0.05,
+            }
+        );
+    } else if (!newValue && menuContainerRef.value && menuNumberRefs.value && menuTitleRefs.value && menuFooterRefs.value) {
+        // Container animation - match NavFilmList timing
+        gsap.to(menuContainerRef.value, {
+            maxHeight: '0',
+            duration: 0.2,
+            ease: 'power2.out',
+        });
+        
+        // Reverse animations when closing
+        gsap.to(menuNumberRefs.value, 
+            {
+                clipPath: 'inset(0 0 200% 0)',
+                yPercent: 100,
+                duration: 0.2,
+                ease: 'power2.in',
+                stagger: 0.05,
+            }
+        );
+        
+        gsap.to(menuTitleRefs.value, 
+            {
+                clipPath: 'inset(0 0 200% 0)',
+                yPercent: 100,
+                duration: 0.2,
+                ease: 'power2.in',
+                stagger: 0.05,
+            }
+        );
+        
+        gsap.to(menuFooterRefs.value, 
+            {
+                clipPath: 'inset(0 0 200% 0)',
+                yPercent: 100,
+                duration: 0.2,
+                ease: 'power2.in',
+                stagger: 0.05,
+            }
+        );
+    }
+});
 </script>
 
 <template>
-	<div class="flex flex-col ticket-menu bg-primary px-6 transition-all duration-800 ease-in-out overflow-hidden"
-		:style="isOpen ? 'max-height: 500px;' : 'max-height: 0;'">
+	<div class="flex flex-col ticket-menu bg-primary px-6 overflow-hidden max-h-0" ref="menuContainerRef">
 	            <div class="flex flex-col gap-2 my-6 nav-menu-container" >
 	                <button class="flex items-baseline gap-2 cursor-pointer nav-menu-item">
-	                    <span class="text-xs uppercase cursor-pointer transition-colors duration-200">01</span>
-	                    <span class="text-3xl font-semibold uppercase cursor-pointer transition-colors duration-200">Work</span>
+	                    <div class="overflow-hidden">
+	                        <span class="text-xs uppercase cursor-pointer transition-colors duration-200 block" :ref="setMenuNumberRef">01</span>
+	                    </div>
+	                    <div class="overflow-hidden">
+	                        <span class="text-3xl font-semibold uppercase cursor-pointer transition-colors duration-200 block" :ref="setMenuTitleRef">Work</span>
+	                    </div>
 	                </button>
 	                <button class="flex items-baseline gap-2 cursor-pointer nav-menu-item">
-	                    <span class="text-xs uppercase cursor-pointer transition-colors duration-200">02</span>
-	                    <span class="text-3xl font-semibold uppercase cursor-pointer transition-colors duration-200">About</span>
+	                    <div class="overflow-hidden">
+	                        <span class="text-xs uppercase cursor-pointer transition-colors duration-200 block" :ref="setMenuNumberRef">02</span>
+	                    </div>
+	                    <div class="overflow-hidden">
+	                        <span class="text-3xl font-semibold uppercase cursor-pointer transition-colors duration-200 block" :ref="setMenuTitleRef">About</span>
+	                    </div>
 	                </button>
 	                <button class="flex items-baseline gap-2 cursor-pointer nav-menu-item">
-	                    <span class="text-xs uppercase cursor-pointer transition-colors duration-200">03</span>
-	                    <span class="text-3xl font-semibold uppercase cursor-pointer transition-colors duration-200">Contact</span>
+	                    <div class="overflow-hidden">
+	                        <span class="text-xs uppercase cursor-pointer transition-colors duration-200 block" :ref="setMenuNumberRef">03</span>
+	                    </div>
+	                    <div class="overflow-hidden">
+	                        <span class="text-3xl font-semibold uppercase cursor-pointer transition-colors duration-200 block" :ref="setMenuTitleRef">Contact</span>
+	                    </div>
 	                </button>
 	            </div>
 	            <hr class="border-black border-dashed -mx-6">
 	            <div class="flex gap-10 max-h-20 my-6">
-	                <button class="text-sm text-gray-500  uppercase cursor-pointer hover:text-black transition-colors duration-200">Cookie</button>
-	                <button class="text-sm text-gray-500  uppercase cursor-pointer hover:text-black transition-colors duration-200">Terms</button>
-	                <button class="text-sm text-gray-500  uppercase cursor-pointer hover:text-black transition-colors duration-200">Privacy</button>
+	                <div class="overflow-hidden">
+	                    <button class="text-sm text-gray-500 uppercase cursor-pointer hover:text-black transition-colors duration-200 block" :ref="setMenuFooterRef">Cookie</button>
+	                </div>
+	                <div class="overflow-hidden">
+	                    <button class="text-sm text-gray-500 uppercase cursor-pointer hover:text-black transition-colors duration-200 block" :ref="setMenuFooterRef">Terms</button>
+	                </div>
+	                <div class="overflow-hidden">
+	                    <button class="text-sm text-gray-500 uppercase cursor-pointer hover:text-black transition-colors duration-200 block" :ref="setMenuFooterRef">Privacy</button>
+	                </div>
 	            </div>
 	            <hr class="border-black border-dashed -mx-6">
 	            <div class="flex flex-col ">

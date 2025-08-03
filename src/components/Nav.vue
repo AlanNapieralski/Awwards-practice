@@ -50,8 +50,7 @@ const toggleFilmListWithRef = () => {
          <nav class="shadow-lg relative z-10">
             <div class="flex h-28 relative ticket bg-primary border-b border-dashed"
              :class="isMenuOpen ? 'border-gray-400' : 'border-transparent'">
-             <button class="w-64 flex flex-col justify-between h-full cursor-pointer border-b border-dashed" @click="toggleFilmListWithRef"
-             :class="isFilmListOpen ? 'border-gray-400' : 'border-transparent'">
+             <button class="w-64 flex flex-col justify-between h-full cursor-pointer" @click="toggleFilmListWithRef">
                 <div class="flex justify-between h-full px-3 py-4">
                     <div class="inline-flex items-start gap-3">
                         <img src="/public/film_icons/pulp_fiction.png" alt="pulp fiction icon" class="w-10 h-10 aspect-square rounded-lg">
