@@ -10,36 +10,35 @@ const emit = defineEmits<{
 	menuClosed: []
 }>()
 
-const menuNumberRefs = ref<HTMLSpanElement[]>([]);
-const menuTitleRefs = ref<HTMLSpanElement[]>([]);
-const menuFooterRefs = ref<HTMLButtonElement[]>([]);
-const menuContainerRef = ref<HTMLDivElement | null>(null);
+const menuNumberRefs = ref<HTMLSpanElement[]>([])
+const menuTitleRefs = ref<HTMLSpanElement[]>([])
+const menuFooterRefs = ref<HTMLButtonElement[]>([])
+const menuContainerRef = ref<HTMLDivElement | null>(null)
 
-// Function to set refs for arrays
 const setMenuNumberRef = (el: any) => {
     if (el && el instanceof HTMLSpanElement && !menuNumberRefs.value.includes(el)) {
-        menuNumberRefs.value.push(el);
+        menuNumberRefs.value.push(el)
     }
-};
+}
 
 const setMenuTitleRef = (el: any) => {
     if (el && el instanceof HTMLSpanElement && !menuTitleRefs.value.includes(el)) {
         menuTitleRefs.value.push(el);
     }
-};
+}
 
 const setMenuFooterRef = (el: any) => {
     if (el && el instanceof HTMLButtonElement && !menuFooterRefs.value.includes(el)) {
         menuFooterRefs.value.push(el);
     }
-};
+}
 
 watch(() => props.isOpen, (newValue) => {
     // Kill any running animations first
-    gsap.killTweensOf(menuContainerRef.value);
-    gsap.killTweensOf(menuNumberRefs.value);
-    gsap.killTweensOf(menuTitleRefs.value);
-    gsap.killTweensOf(menuFooterRefs.value);
+    gsap.killTweensOf(menuContainerRef.value)
+    gsap.killTweensOf(menuNumberRefs.value)
+    gsap.killTweensOf(menuTitleRefs.value)
+    gsap.killTweensOf(menuFooterRefs.value)
     
     if (newValue && menuContainerRef.value && menuNumberRefs.value && menuTitleRefs.value && menuFooterRefs.value) {
         // Container animation - match NavFilmList timing
@@ -47,7 +46,7 @@ watch(() => props.isOpen, (newValue) => {
             maxHeight: '500px',
             duration: 0.8,
             ease: 'power2.out',
-        });
+        })
         
         // Menu numbers reveal animation
         gsap.fromTo(menuNumberRefs.value, 
@@ -62,7 +61,7 @@ watch(() => props.isOpen, (newValue) => {
                 ease: 'power2.out',
                 stagger: 0.05,
             }
-        );
+        )
     
         // Menu titles reveal animation
         gsap.fromTo(menuTitleRefs.value, 
@@ -77,7 +76,7 @@ watch(() => props.isOpen, (newValue) => {
                 ease: 'power2.out',
                 stagger: 0.05,
             }
-        );
+        )
         
         // Footer buttons reveal animation
         gsap.fromTo(menuFooterRefs.value, 
@@ -92,9 +91,8 @@ watch(() => props.isOpen, (newValue) => {
                 ease: 'power2.out',
                 stagger: 0.05,
             }
-        );
+        )
     } else if (!newValue && menuContainerRef.value && menuNumberRefs.value && menuTitleRefs.value && menuFooterRefs.value) {
-        // Container animation - match NavFilmList timing
         gsap.to(menuContainerRef.value, {
             maxHeight: '0',
             duration: 0.2,
@@ -102,7 +100,7 @@ watch(() => props.isOpen, (newValue) => {
             onComplete: () => {
               emit('menuClosed')
             }
-        });
+        })
         
         // Reverse animations when closing
         gsap.to(menuNumberRefs.value, 
@@ -113,7 +111,7 @@ watch(() => props.isOpen, (newValue) => {
                 ease: 'power2.in',
                 stagger: 0.05,
             }
-        );
+        )
         
         gsap.to(menuTitleRefs.value, 
             {
@@ -123,7 +121,7 @@ watch(() => props.isOpen, (newValue) => {
                 ease: 'power2.in',
                 stagger: 0.05,
             }
-        );
+        )
         
         gsap.to(menuFooterRefs.value, 
             {
@@ -133,7 +131,7 @@ watch(() => props.isOpen, (newValue) => {
                 ease: 'power2.in',
                 stagger: 0.05,
             }
-        );
+        )
     }
 });
 </script>
