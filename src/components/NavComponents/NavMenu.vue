@@ -6,6 +6,10 @@ const props = defineProps<{
 	isOpen: boolean;
 }>()
 
+const emit = defineEmits<{
+	menuClosed: []
+}>()
+
 const menuNumberRefs = ref<HTMLSpanElement[]>([]);
 const menuTitleRefs = ref<HTMLSpanElement[]>([]);
 const menuFooterRefs = ref<HTMLButtonElement[]>([]);
@@ -95,6 +99,9 @@ watch(() => props.isOpen, (newValue) => {
             maxHeight: '0',
             duration: 0.2,
             ease: 'power2.out',
+            onComplete: () => {
+              emit('menuClosed')
+            }
         });
         
         // Reverse animations when closing

@@ -6,6 +6,10 @@ const props = defineProps<{
 	isOpen: boolean;
 }>()
 
+const emit = defineEmits<{
+	filmListClosed: []
+}>()
+
 const films = [
     {
         title: 'Pulp Fiction',
@@ -14,17 +18,17 @@ const films = [
     },
     {
         title: 'The Godfather',
-        icon: '/public/film_icons/the_godfather.png',
+        icon: '/public/film_icons/the_godfather.jpg',
         active: false,
     },
     {
         title: 'The Dark Knight',
-        icon: '/public/film_icons/the_dark_knight.png',
+        icon: '/public/film_icons/the_dark_knight.jpg',
         active: false,
     },
     {
         title: 'The Lord of the Rings: The Return of the King',
-        icon: '/public/film_icons/the_lord_of_the_rings_the_return_of_the_king.png',
+        icon: '/public/film_icons/the_lord_of_the_rings.jpg',
         active: false,
     },
 ]
@@ -54,12 +58,14 @@ watch(() => props.isOpen, (newValue) => {
         ease: 'power2.out' ,
       });
 
-      gsap.from(filmIconRef.value, {
+      gsap.fromTo(filmIconRef.value, {
           xPercent: -200,
           duration: 0.8,
           ease: 'power2.out',
           stagger: 0.05,
-      });
+      }, {
+        xPercent: 0,
+      })
       
       gsap.fromTo(filmTitleRefs.value, 
           {
@@ -86,6 +92,9 @@ watch(() => props.isOpen, (newValue) => {
       gsap.to(filmListRef.value, {
         maxHeight: '0',
         duration: 0.2,
+        onComplete: () => {
+          emit('filmListClosed');
+        }
       });
 
         gsap.to(filmIconRef.value, {

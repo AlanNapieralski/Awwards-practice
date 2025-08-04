@@ -1,47 +1,56 @@
 <script setup>
-import { ref, nextTick, onMounted } from 'vue';
+import { ref } from 'vue';
+import gsap from 'gsap';
 import NavMenu from './NavComponents/NavMenu.vue'
 import NavFilmList from './NavComponents/NavFilmList.vue'
 
-const isMenuOpen = ref(false);
-const isFilmListOpen = ref(false);
-const filmListRef = ref(null);
-const menuRef = ref(null);
+const isMenuOpen = ref(false)
+const isFilmListOpen = ref(false)
+const filmListRef = ref(null)
+const menuRef = ref(null)
+const shouldOpenFilmList = ref(false)
+const shouldOpenMenu = ref(false)
 
 const toggleMenuWithRef = () => {
     // If film list is open, close it first, then open menu after animation
     if (isFilmListOpen.value) {
-        isFilmListOpen.value = false;
-        nextTick(() => {
-            // accessing the DOM element, not the component instance
-            if (filmListRef.value && filmListRef.value.$el) {
-                filmListRef.value.$el.addEventListener('transitionend', () => {
-                    isMenuOpen.value = true
-                }, { once: true })
-            }
-        });
+        shouldOpenMenu.value = true
+        isFilmListOpen.value = false
         return
     }
     
-    isMenuOpen.value = !isMenuOpen.value
+    isMenuOpen.value = !isMenuOpen.value;
 }
 
 const toggleFilmListWithRef = () => {
-    // If menu is open, close it first, then open film list after animation
     if (isMenuOpen.value) {
+        // Set flag to open film list after menu closes
+        shouldOpenFilmList.value = true;
         isMenuOpen.value = false;
-        nextTick(() => {
-            if (menuRef.value && menuRef.value.$el) {
-                // accessing the DOM element, not the component instance
-                menuRef.value.$el.addEventListener('transitionend', () => {
-                    isFilmListOpen.value = true
-                }, { once: true });
-            }
-        });
-        return
+        return;
     }
     
     isFilmListOpen.value = !isFilmListOpen.value;
+}
+
+const handleMenuClosed = () => {
+    // If we were waiting to open film list, do it now
+    if (shouldOpenFilmList.value) {
+        gsap.delayedCall(0.2, () => {
+            isFilmListOpen.value = true
+            shouldOpenFilmList.value = false
+        })
+    }
+}
+
+const handleFilmListClosed = () => {
+    // If we were waiting to open menu, do it now
+    if (shouldOpenMenu.value) {
+        gsap.delayedCall(0.2, () => {
+            isMenuOpen.value = true
+            shouldOpenMenu.value = false
+        })
+    }
 }
 
 </script>
@@ -91,8 +100,8 @@ const toggleFilmListWithRef = () => {
                 </div>
              </button>
         </div>
-        <NavMenu ref="menuRef" :isOpen="isMenuOpen" />
-        <NavFilmList ref="filmListRef" :isOpen="isFilmListOpen"  class="w-64"/>
+        <NavMenu ref="menuRef" :isOpen="isMenuOpen" @menuClosed="handleMenuClosed" />
+        <NavFilmList ref="filmListRef" :isOpen="isFilmListOpen" @filmListClosed="handleFilmListClosed" class="w-64"/>
     </nav>
 </template>
 
