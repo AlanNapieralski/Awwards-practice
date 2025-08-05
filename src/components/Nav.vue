@@ -3,6 +3,8 @@ import { ref, watch, onMounted } from 'vue';
 import gsap from 'gsap';
 import NavMenu from './NavComponents/NavMenu.vue'
 import NavFilmList from './NavComponents/NavFilmList.vue'
+import { useHoverMask } from '../composables/useHoverMask'
+import { useNavAnimations } from '../composables/useNavAnimations'
 
 const isMenuOpen = ref(false)
 const isFilmListOpen = ref(false)
@@ -10,7 +12,6 @@ const filmListRef = ref(null)
 const menuRef = ref(null)
 const shouldOpenFilmList = ref(false)
 const shouldOpenMenu = ref(false)
-
 
 // main button animation refs
 const filmIconRef = ref(null)
@@ -24,9 +25,10 @@ const yearRef = ref(null)
 const durationRef = ref(null)
 const burgerButtonRef = ref(null)
 
+const { setupHoverAnimation } = useHoverMask()
+const { animateNavElements } = useNavAnimations()
 
-
-const toggleMenuWithRef = () => {
+const toggleMenu = () => {
     // If film list is open, close it first, then open menu after animation
     if (isFilmListOpen.value) {
         shouldOpenMenu.value = true
@@ -37,7 +39,7 @@ const toggleMenuWithRef = () => {
     isMenuOpen.value = !isMenuOpen.value;
 }
 
-const toggleFilmListWithRef = () => {
+const toggleFilmList = () => {
     if (isMenuOpen.value) {
         // Set flag to open film list after menu closes
         shouldOpenFilmList.value = true;
@@ -69,146 +71,22 @@ const handleFilmListClosed = () => {
 }
 
 watch(() => isMenuOpen.value, (newValue) => {
-    // Kill any running animations first
-    gsap.killTweensOf(filmIconRef.value)
-    gsap.killTweensOf(titleRef.value)
-    gsap.killTweensOf(arrowIconRef.value)
-    gsap.killTweensOf(horizontalLineRef.value)
-    gsap.killTweensOf(verticalLineRef1.value)
-    gsap.killTweensOf(verticalLineRef2.value)
-    gsap.killTweensOf(featureFilmRef.value)
-    gsap.killTweensOf(yearRef.value)
-    gsap.killTweensOf(durationRef.value)
-        
-    if (newValue) {
-        // Animate out when menu opens
-        const tl = gsap.timeline()
-        tl.to(filmIconRef.value, {
-            xPercent: -200,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(titleRef.value, {
-            yPercent: -200,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(arrowIconRef.value, {
-            rotate: 180,
-            opacity: 0,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(horizontalLineRef.value, {
-            scaleX: 0,
-            transformOrigin: "left center",
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(verticalLineRef1.value, {
-            scaleY: 0,
-            transformOrigin: "center bottom",
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(verticalLineRef2.value, {
-            scaleY: 0,
-            transformOrigin: "center bottom",
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(featureFilmRef.value, {
-            yPercent: 200,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(yearRef.value, {
-            yPercent: 200,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(durationRef.value, {
-            yPercent: 200,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-    } else {
-        // Animate back when menu closes
-        const tl = gsap.timeline()
-        tl.to(filmIconRef.value, {
-            xPercent: 0,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(titleRef.value, {
-            yPercent: 0,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(arrowIconRef.value, {
-            rotate: 0,
-            opacity: 1,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(horizontalLineRef.value, {
-            scaleX: 1,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(verticalLineRef1.value, {
-            scaleY: 1,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(verticalLineRef2.value, {
-            scaleY: 1,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(featureFilmRef.value, {
-            yPercent: 0,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(yearRef.value, {
-            yPercent: 0,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-        .to(durationRef.value, {
-            yPercent: 0,
-            duration: 0.5,
-            ease: 'power2.inOut'
-        }, 0)
-    }
+    animateNavElements(newValue, {
+        filmIconRef,
+        titleRef,
+        arrowIconRef,
+        horizontalLineRef,
+        verticalLineRef1,
+        verticalLineRef2,
+        featureFilmRef,
+        yearRef,
+        durationRef
+    })
 })
 
-// Add hover functionality for burger button
-const setupBurgerHoverAnimation = () => {
-    if (burgerButtonRef.value) {
-        // Set initial state - completely hidden (clipped from bottom)
-        gsap.set(burgerButtonRef.value, { '--mask-clip': 'inset(100% 0 0 0)' })
-        
-        burgerButtonRef.value.addEventListener('mouseenter', () => {
-            gsap.fromTo(burgerButtonRef.value, 
-                { '--mask-clip': 'inset(100% 0 0 0)' },
-                { '--mask-clip': 'inset(0 0 0 0)', duration: 0.3, ease: 'power2.out' }
-            )
-        })
-        
-        burgerButtonRef.value.addEventListener('mouseleave', () => {
-            gsap.to(burgerButtonRef.value, {
-                '--mask-clip': 'inset(100% 0 0 0)',
-                duration: 0.3,
-                ease: 'power2.out'
-            })
-        })
-    }
-}
 
 onMounted(() => {
-    setupBurgerHoverAnimation()
+    setupHoverAnimation(burgerButtonRef, 'burger-button-mask')
 })
 </script>
 
@@ -216,7 +94,8 @@ onMounted(() => {
          <nav class="shadow-lg absolute top-1/3 left-1/2 transform -translate-x-1/2 z-10">
             <div class="flex h-28 relative ticket bg-primary border-b border-dashed"
              :class="isMenuOpen ? 'border-gray-400' : 'border-transparent'">
-             <button class="w-64 flex flex-col justify-between h-full cursor-pointer" @click="toggleFilmListWithRef">
+            <!-- Main Nav Button -->
+             <button class="w-64 flex flex-col justify-between h-full cursor-pointer" @click="toggleFilmList">
                 <div class="flex justify-between h-full px-3 py-4">
                     <div class="inline-flex gap-3">
                         <img src="/public/film_icons/pulp_fiction.png" alt="pulp fiction icon" class="w-10 h-10 aspect-square rounded-lg" ref="filmIconRef">
@@ -230,6 +109,7 @@ onMounted(() => {
                     </div>
                 </div>
                 <hr class="divide-black border-t" ref="horizontalLineRef">
+                <!-- Main Nav Footer section -->
                 <div class="flex h-8 w-full">
                     <div class="basis-2/3 uppercase text-[0.5rem] text-gray-500 px-4 flex justify-center items-center" ref="featureFilmRef">Feature Film</div>
                     <hr class="divide-black border-r h-full" ref="verticalLineRef1">
@@ -238,8 +118,9 @@ onMounted(() => {
                     <div class="uppercase text-[0.5rem] text-gray-500 px-4 flex justify-center items-center" ref="durationRef">min.109</div>
                 </div>
             </button>
-            <div class="h-full border-l border-black border-dashed"></div>
-            <button class="w-28 h-28 flex flex-col items-center justify-center gap-1 cursor-pointer relative burger-button-mask" ref="burgerButtonRef" @click="toggleMenuWithRef">
+            <hr class="h-full border-l border-black border-dashed" />
+            <!-- Burger Menu Button -->
+            <button class="w-28 h-28 flex flex-col items-center justify-center gap-1 cursor-pointer relative burger-button-mask" ref="burgerButtonRef" @click="toggleMenu">
                 <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full transition-all duration-500" 
                  :style="isMenuOpen ? 'max-height: 500px' : 'max-height: 0'"></div>
                 <div class="relative w-full h-full flex flex-col justify-center items-center">
@@ -259,13 +140,16 @@ onMounted(() => {
                 </div>
              </button>
         </div>
+        <!-- Main Menu -->
         <NavMenu ref="menuRef" :isOpen="isMenuOpen" @menuClosed="handleMenuClosed" class="relative w-full z-20" />
+        <!-- Film List -->
         <NavFilmList ref="filmListRef" :isOpen="isFilmListOpen" @filmListClosed="handleFilmListClosed" class="relative w-64 z-20"/>
     </nav>
 </template>
 
 
 <style scoped>
+/* Circle cutouts */
 .ticket {
   -webkit-mask-image: radial-gradient(
       circle 10px at 0px 0px,
@@ -335,6 +219,7 @@ onMounted(() => {
   mask-composite: intersect;
 }
 
+/* Hover effects */
 .film-title-mask {
   --mask-clip: inset(100% 0 0 0);
 }

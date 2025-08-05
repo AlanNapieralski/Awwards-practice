@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import gsap from 'gsap';
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
+import { useHoverMask } from '../../composables/useHoverMask'
+import { films } from '../../data/films'
 
 const props = defineProps<{
 	isOpen: boolean;
@@ -10,60 +12,12 @@ const emit = defineEmits<{
 	filmListClosed: []
 }>()
 
-const films = [
-    {
-        title: 'Pulp Fiction',
-        icon: '/public/film_icons/pulp_fiction.png',
-        active: true,
-    },
-    {
-        title: 'The Godfather',
-        icon: '/public/film_icons/the_godfather.jpg',
-        active: false,
-    },
-    {
-        title: 'The Dark Knight',
-        icon: '/public/film_icons/the_dark_knight.jpg',
-        active: false,
-    },
-    {
-        title: 'The Lord of the Rings: The Return of the King',
-        icon: '/public/film_icons/the_lord_of_the_rings.jpg',
-        active: false,
-    },
-]
-
 const filmListRef = ref<HTMLDivElement | null>(null)
 const filmIconRef = ref<HTMLDivElement | null>(null)
 const filmTitleRefs = ref<HTMLSpanElement[]>([])
 const filmLineRefs = ref<HTMLHRElement[]>([])
 
-const setupHoverAnimations = () => {
-    if (filmTitleRefs.value) {
-        filmTitleRefs.value.forEach((titleRef: any) => {
-            const maskElement = titleRef.closest('.film-title-mask')
-            if (maskElement) {
-                // Set initial state - completely hidden (clipped from bottom)
-                gsap.set(maskElement, { '--mask-clip': 'inset(100% 0 0 0)' })
-                
-                maskElement.addEventListener('mouseenter', () => {
-                  gsap.fromTo(maskElement, 
-                      { '--mask-clip': 'inset(100% 0 0 0)' },
-                      { '--mask-clip': 'inset(0 0 0 0)', duration: 0.3, ease: 'power2.out' }
-                  )
-                })
-                
-                maskElement.addEventListener('mouseleave', () => {
-                    gsap.to(maskElement, {
-                        '--mask-clip': 'inset(100% 0 0 0)',
-                        duration: 0.3,
-                        ease: 'power2.out'
-                    })
-                })
-            }
-        })
-    }
-}
+const { setupMultipleHoverAnimations } = useHoverMask()
 
 watch(() => props.isOpen, (newValue) => {
     // Kill any running animations first
@@ -107,10 +61,7 @@ watch(() => props.isOpen, (newValue) => {
               stagger: 0.05,
           }
       )
-
-
-
-              gsap.to(filmLineRefs.value, {
+        gsap.to(filmLineRefs.value, {
             width: 'calc(100% + 38px)',
             duration: 0.8,
             ease: 'power2.in',
@@ -118,7 +69,7 @@ watch(() => props.isOpen, (newValue) => {
         })
 
         // Setup hover animations after opening
-        gsap.delayedCall(0.8, setupHoverAnimations)
+        gsap.delayedCall(0.8, () => setupMultipleHoverAnimations(filmTitleRefs, 'film-title-mask'))
 
     } else if (!newValue && filmIconRef.value && filmTitleRefs.value && filmListRef.value && filmLineRefs.value) {
       gsap.to(filmListRef.value, {
@@ -158,20 +109,23 @@ watch(() => props.isOpen, (newValue) => {
 <template>
     <div class="flex flex-col ticket-film-list bg-primary max-h-0 h-full overflow-hidden" ref="filmListRef">
         <div class="flex flex-col">
+          <!-- Film List Items -->
             <div v-for="film in films" :key="film.title" class="cursor-pointer">
                 <hr class="border-gray-400 border-dashed -mx-6 w-0" ref="filmLineRefs">
                 <div class="flex justify-between items-center py-1 px-4 film-title-mask relative group">
                     <button class="flex items-center gap-2">
                         <img :src="film.icon" alt="pulp fiction icon" class="w-5 h-5 aspect-square rounded-xs" :class="{'border-2 border-black': film.active} " ref="filmIconRef">
                         <div class="overflow-hidden" ref="filmTitleRefs">
-                            <span class="text-xs font-semibold uppercase my-2 break-words line-clamp-2 max-w-[150px] block">{{ film.title }}</span>
+                            <span class="text-xs font-semibold uppercase my-2 text-left break-words line-clamp-2 max-w-[150px]">{{ film.title }}</span>
                         </div>
                     </button>
+                    <!-- Arrow Icon -->
                     <div class="h-6 w-6 aspect-square border-1 border-dashed rounded-sm flex items-center justify-center hover:bg-black hover:border-white invisible group-hover:visible group/small">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-700 group-hover/small:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                         </svg>
                     </div>
+                    <!-- Active Button Indicator -->
                     <div v-if="film.active" class="absolute right-4 w-[5px] h-[5px] aspect-square rounded-full bg-black group-hover:opacity-0 transition-opacity duration-200 ease-in-out"></div>
                 </div>
             </div>

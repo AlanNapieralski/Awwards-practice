@@ -41,7 +41,6 @@ watch(() => props.isOpen, (newValue) => {
     gsap.killTweensOf(menuFooterRefs.value)
     
     if (newValue && menuContainerRef.value && menuNumberRefs.value && menuTitleRefs.value && menuFooterRefs.value) {
-        // Container animation - match NavFilmList timing
         gsap.to(menuContainerRef.value, {
             maxHeight: '500px',
             duration: 0.8,
@@ -140,6 +139,8 @@ watch(() => props.isOpen, (newValue) => {
 <template>
 	<div class="flex flex-col ticket-menu bg-primary px-6 overflow-hidden max-h-0" ref="menuContainerRef">
 	            <div class="flex flex-col gap-2 my-6 nav-menu-container" >
+
+                    <!-- Menu Items -->
 	                <button class="flex items-baseline gap-2 cursor-pointer nav-menu-item">
 	                    <div class="overflow-hidden">
 	                        <span class="text-xs uppercase cursor-pointer transition-colors duration-200 block" :ref="setMenuNumberRef">01</span>
@@ -166,6 +167,8 @@ watch(() => props.isOpen, (newValue) => {
 	                </button>
 	            </div>
 	            <hr class="border-black border-dashed -mx-6">
+
+                <!-- Footer Buttons -->
 	            <div class="flex gap-10 max-h-20 my-6">
 	                <div class="overflow-hidden">
 	                    <button class="text-sm text-gray-500 uppercase cursor-pointer hover:text-black transition-colors duration-200 block" :ref="setMenuFooterRef">Cookie</button>
@@ -178,6 +181,8 @@ watch(() => props.isOpen, (newValue) => {
 	                </div>
 	            </div>
 	            <hr class="border-black border-dashed -mx-6">
+
+                <!-- Social Media Icons -->
 	            <div class="flex flex-col ">
 	                <div class="flex gap-6 items-center my-6">
 	                   <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram" class="text-gray-700 hover:text-black transition-colors">
@@ -198,6 +203,8 @@ watch(() => props.isOpen, (newValue) => {
 	               </div>
 	            <hr class="border-black border-dashed -mx-6">
 	            </div>
+
+                <!-- Copyright -->
 	            <div class="flex justify-between my-4">
 	                <div class="flex items-center gap-2">
 	                    <span class="text-xs text-gray-500 uppercase">© 2024.</span>
