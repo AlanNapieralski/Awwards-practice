@@ -160,14 +160,19 @@ watch(() => props.isOpen, (newValue) => {
         <div class="flex flex-col">
             <div v-for="film in films" :key="film.title" class="cursor-pointer">
                 <hr class="border-gray-400 border-dashed -mx-6 w-0" ref="filmLineRefs">
-                <div class="flex justify-between items-center py-1 px-4 film-title-mask">
+                <div class="flex justify-between items-center py-1 px-4 film-title-mask relative group">
                     <button class="flex items-center gap-2">
                         <img :src="film.icon" alt="pulp fiction icon" class="w-5 h-5 aspect-square rounded-xs" :class="{'border-2 border-black': film.active} " ref="filmIconRef">
                         <div class="overflow-hidden" ref="filmTitleRefs">
                             <span class="text-xs font-semibold uppercase my-2 break-words line-clamp-2 max-w-[150px] block">{{ film.title }}</span>
                         </div>
                     </button>
-                    <div v-if="film.active" class="w-[6px] h-[6px] aspect-square rounded-full bg-black"></div>
+                    <div class="h-6 w-6 aspect-square border-1 border-dashed rounded-sm flex items-center justify-center hover:bg-black hover:border-white invisible group-hover:visible group/small">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-700 group-hover/small:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                    <div v-if="film.active" class="absolute right-4 w-[5px] h-[5px] aspect-square rounded-full bg-black group-hover:opacity-0 transition-opacity duration-200 ease-in-out"></div>
                 </div>
             </div>
         </div>

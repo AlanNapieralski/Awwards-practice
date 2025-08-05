@@ -101,16 +101,19 @@ watch(() => isMenuOpen.value, (newValue) => {
         }, 0)
         .to(horizontalLineRef.value, {
             scaleX: 0,
+            transformOrigin: "left center",
             duration: 0.5,
             ease: 'power2.inOut'
         }, 0)
         .to(verticalLineRef1.value, {
             scaleY: 0,
+            transformOrigin: "center bottom",
             duration: 0.5,
             ease: 'power2.inOut'
         }, 0)
         .to(verticalLineRef2.value, {
             scaleY: 0,
+            transformOrigin: "center bottom",
             duration: 0.5,
             ease: 'power2.inOut'
         }, 0)

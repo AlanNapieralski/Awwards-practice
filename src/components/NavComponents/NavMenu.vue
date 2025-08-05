@@ -59,7 +59,7 @@ watch(() => props.isOpen, (newValue) => {
                 yPercent: 0,
                 duration: 0.8,
                 ease: 'power2.out',
-                stagger: 0.05,
+                stagger: 0.1,
             }
         )
     
@@ -74,7 +74,7 @@ watch(() => props.isOpen, (newValue) => {
                 yPercent: 0,
                 duration: 0.8,
                 ease: 'power2.out',
-                stagger: 0.05,
+                stagger: 0.1,
             }
         )
         
@@ -89,7 +89,8 @@ watch(() => props.isOpen, (newValue) => {
                 yPercent: 0,
                 duration: 0.8,
                 ease: 'power2.out',
-                stagger: 0.05,
+                delay: 0.4,
+                stagger: 0.1,
             }
         )
     } else if (!newValue && menuContainerRef.value && menuNumberRefs.value && menuTitleRefs.value && menuFooterRefs.value) {
