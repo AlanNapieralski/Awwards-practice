@@ -25,6 +25,8 @@ const yearRef = ref(null)
 const durationRef = ref(null)
 const burgerButtonRef = ref(null)
 
+const base = import.meta.env.BASE_URL
+
 const { setupHoverAnimation } = useHoverMask()
 const { animateNavElements } = useNavAnimations()
 
@@ -98,7 +100,7 @@ onMounted(() => {
              <button class="w-64 flex flex-col justify-between h-full cursor-pointer" @click="toggleFilmList">
                 <div class="flex justify-between h-full px-3 py-4">
                     <div class="inline-flex gap-3">
-                        <img src="/public/film_icons/pulp_fiction.png" alt="pulp fiction icon" class="w-10 h-10 aspect-square rounded-lg" ref="filmIconRef">
+                        <img :src="base + 'film_icons/pulp_fiction.png'" alt="pulp fiction icon" class="w-10 h-10 aspect-square rounded-lg" ref="filmIconRef">
                         <span class="text-xl font-semibold text-left" ref="titleRef">Pulp Fiction</span>
                     </div>
                     <div>
